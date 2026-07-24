@@ -1,0 +1,1592 @@
+<!doctype html>
+<!-- Theme: green | indigo | graphite | navy -->
+<html lang="en" data-theme="green">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Academic Standing — Student Performance Dashboard</title>
+<meta name="description" content="Department-wide academic performance dashboard: CGPA tracking, at-risk register, course difficulty index and degree-class projection.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   Academic Standing — stylesheet
+   Palette: deep academic green on cool paper. Registry-grade type.
+   ============================================================ */
+
+:root {
+  --ink:        #0F1F1A;
+  --ink-70:     #43554E;
+  --ink-45:     #7B8A83;
+  --moss:       #1C5C43;
+  --moss-deep:  #10352663;
+  --moss-solid: #133F2E;
+  --moss-mid:   #2F7A5C;
+  --gold:       #C79A4E;
+  --sage:       #6E9B85;
+  --sage-wash:  #DCE7E0;
+  --paper:      #EDF0EB;
+  --chalk:      #FFFFFF;
+  --amber:      #B8801F;
+  --amber-wash: #F6EBD4;
+  --alert:      #A82B24;
+  --alert-wash: #F6E2E0;
+  --line:       rgba(15, 31, 26, 0.10);
+  --line-firm:  rgba(15, 31, 26, 0.20);
+
+  --shadow-card: 0 1px 2px rgba(15,31,26,.05), 0 8px 24px -14px rgba(15,31,26,.22);
+  --r: 10px;
+
+  --display: 'Fraunces', Georgia, serif;
+  --body: 'Public Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+/* ------------------------------------------------------------
+   THEMES — change data-theme on the <html> tag in index.html
+   Options: green (default) · indigo · graphite · navy
+   ------------------------------------------------------------ */
+[data-theme="indigo"] {
+  --ink: #14162B; --ink-70: #474B69; --ink-45: #7C7F99;
+  --moss: #3A44A0; --moss-solid: #2A3078; --moss-mid: #5560B8;
+  --sage: #868DC4; --sage-wash: #E1E3F4; --gold: #C79A4E;
+  --paper: #EEEFF7;
+  --line: rgba(20,22,43,.10); --line-firm: rgba(20,22,43,.20);
+  --shadow-card: 0 1px 2px rgba(20,22,43,.05), 0 8px 24px -14px rgba(20,22,43,.24);
+}
+[data-theme="graphite"] {
+  --ink: #14191B; --ink-70: #46545A; --ink-45: #7C8A90;
+  --moss: #0E6E6E; --moss-solid: #0A4E4E; --moss-mid: #2C8C8C;
+  --sage: #79ADAD; --sage-wash: #DBEBEB; --gold: #C79A4E;
+  --paper: #EEF1F2;
+  --line: rgba(20,25,27,.10); --line-firm: rgba(20,25,27,.20);
+  --shadow-card: 0 1px 2px rgba(20,25,27,.05), 0 8px 24px -14px rgba(20,25,27,.24);
+}
+[data-theme="navy"] {
+  --ink: #0D1A2B; --ink-70: #3F5064; --ink-45: #78889A;
+  --moss: #1B4B7A; --moss-solid: #123354; --moss-mid: #33689C;
+  --sage: #7B9CBB; --sage-wash: #DCE6F0; --gold: #C79A4E;
+  --paper: #ECF0F4;
+  --line: rgba(13,26,43,.10); --line-firm: rgba(13,26,43,.20);
+  --shadow-card: 0 1px 2px rgba(13,26,43,.05), 0 8px 24px -14px rgba(13,26,43,.24);
+}
+
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+table { border-collapse: collapse; width: 100%; }
+a { color: var(--moss); }
+
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+
+/* ---------- Shell ---------- */
+.shell { display: grid; grid-template-columns: 236px 1fr; min-height: 100vh; }
+
+.rail {
+  background: var(--ink);
+  color: #D7E2DB;
+  padding: 22px 16px;
+  display: flex; flex-direction: column; gap: 26px;
+  position: sticky; top: 0; height: 100vh;
+}
+.brand { display: flex; gap: 11px; align-items: center; padding: 0 6px; }
+.brand .seal {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--sage);
+  display: grid; place-items: center; flex: none;
+  font-family: var(--display); font-size: 15px; color: #EAF2ED;
+}
+.brand h1 {
+  font-family: var(--display); font-weight: 600; font-size: 17px;
+  margin: 0; line-height: 1.1; color: #F2F7F4;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1, 'opsz' 20;
+}
+.brand span { display: block; font-family: var(--body); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--sage); margin-top: 3px; }
+
+.nav-label { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #5E7A6C; padding: 0 8px; margin-bottom: 8px; }
+.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav button {
+  background: none; border: 0; text-align: left;
+  padding: 9px 10px; border-radius: 8px;
+  color: #B9CCC1; font-size: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.nav button:hover { background: rgba(255,255,255,.06); color: #EAF2ED; }
+.nav button[aria-current="true"] { background: var(--moss); color: #fff; font-weight: 600; }
+.nav svg { width: 16px; height: 16px; flex: none; opacity: .85; }
+
+.rail-foot { margin-top: auto; font-size: 11.5px; color: #5E7A6C; padding: 0 8px; line-height: 1.5; }
+
+/* ---------- Top bar ---------- */
+.main { min-width: 0; display: flex; flex-direction: column; }
+.topbar {
+  background: var(--chalk); border-bottom: 1px solid var(--line);
+  padding: 14px 26px; display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 20;
+}
+.topbar .ctx { margin-right: auto; min-width: 0; }
+.topbar .ctx h2 { font-family: var(--display); font-size: 21px; font-weight: 600; margin: 0; font-variation-settings: 'opsz' 24, 'WONK' 1; }
+.topbar .ctx p { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-45); }
+
+.switch { display: flex; background: var(--paper); border-radius: 8px; padding: 3px; gap: 2px; }
+.switch button {
+  border: 0; background: none; padding: 6px 13px; border-radius: 6px;
+  font-size: 13px; color: var(--ink-70);
+}
+.switch button[aria-pressed="true"] { background: var(--chalk); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(15,31,26,.10); }
+
+select.picker {
+  font: inherit; font-size: 13px; padding: 7px 10px; border-radius: 8px;
+  border: 1px solid var(--line-firm); background: var(--chalk); color: var(--ink);
+}
+
+/* ---------- Content ---------- */
+.content { padding: 24px 26px 60px; display: flex; flex-direction: column; gap: 20px; }
+.view[hidden] { display: none; }
+.view { display: flex; flex-direction: column; gap: 20px; }
+
+.card {
+  background: var(--chalk); border: 1px solid var(--line);
+  border-radius: var(--r); box-shadow: var(--shadow-card);
+}
+.card-head { padding: 16px 18px 0; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.card-head h3 { font-family: var(--display); font-size: 16px; font-weight: 600; margin: 0; font-variation-settings: 'opsz' 18; }
+.card-head p { margin: 0; font-size: 12.5px; color: var(--ink-45); }
+.card-head .spacer { margin-left: auto; }
+.card-body { padding: 16px 18px 18px; }
+.card-body.flush { padding: 14px 0 0; }
+
+.grid { display: grid; gap: 20px; }
+.g-4 { grid-template-columns: repeat(4, 1fr); }
+.g-2 { grid-template-columns: repeat(2, 1fr); }
+.g-32 { grid-template-columns: 1.35fr 1fr; }
+
+/* ---------- Stat tiles ---------- */
+.stat { padding: 16px 18px; }
+.stat .k { font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--ink-45); }
+.stat .v { font-family: var(--mono); font-size: 28px; font-weight: 500; margin-top: 6px; letter-spacing: -.03em; }
+.stat .m { font-size: 12px; color: var(--ink-70); margin-top: 4px; }
+.stat .m b { font-weight: 600; }
+
+/* ---------- Signature: degree-class rail ---------- */
+.classrail { padding: 20px 18px 18px; }
+.classrail .track { position: relative; height: 46px; margin: 34px 0 12px; }
+.classrail .band {
+  position: absolute; top: 0; bottom: 0;
+  border-right: 1px solid rgba(255,255,255,.55);
+  display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
+}
+.classrail .band:last-child { border-right: 0; }
+.classrail .band span {
+  font-size: 9.5px; letter-spacing: .09em; text-transform: uppercase;
+  color: rgba(255,255,255,.9); white-space: nowrap; font-weight: 600;
+}
+.classrail .marker {
+  position: absolute; top: -30px; bottom: -8px; width: 2px; background: var(--ink);
+  transform: translateX(-1px);
+}
+.classrail .marker::after {
+  content: ''; position: absolute; left: -4px; top: 22px;
+  width: 10px; height: 10px; background: var(--ink); border-radius: 50%;
+  border: 2px solid var(--chalk);
+}
+.classrail .marker b {
+  position: absolute; top: -2px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono); font-size: 15px; background: var(--ink); color: #fff;
+  padding: 2px 7px; border-radius: 5px; white-space: nowrap; font-weight: 500;
+}
+.classrail .scale { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--ink-45); }
+.classrail .verdict { margin-top: 14px; font-size: 13.5px; color: var(--ink-70); border-top: 1px solid var(--line); padding-top: 13px; }
+.classrail .verdict b { color: var(--ink); font-weight: 600; }
+
+/* ---------- Tables ---------- */
+.tbl-wrap { overflow-x: auto; }
+table.data { font-size: 13.5px; }
+table.data th {
+  text-align: left; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-45); font-weight: 600; padding: 0 18px 9px; border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+table.data td { padding: 11px 18px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.data tbody tr:last-child td { border-bottom: 0; }
+table.data tbody tr:hover { background: #F7F9F6; }
+table.data th.r, table.data td.r { text-align: right; }
+.who b { display: block; font-weight: 600; }
+.who span { font-family: var(--mono); font-size: 11.5px; color: var(--ink-45); }
+
+.pill {
+  display: inline-block; padding: 2.5px 9px; border-radius: 99px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .01em; white-space: nowrap;
+}
+.pill.high  { background: var(--alert-wash); color: var(--alert); }
+.pill.watch { background: var(--amber-wash); color: var(--amber); }
+.pill.clear { background: var(--sage-wash); color: var(--moss); }
+.pill.ghost { background: var(--paper); color: var(--ink-70); font-weight: 500; }
+
+.gr { font-family: var(--mono); font-weight: 600; }
+.gr.A, .gr.B { color: var(--moss); }
+.gr.C, .gr.D { color: var(--ink-70); }
+.gr.E { color: var(--amber); }
+.gr.F { color: var(--alert); }
+
+.meter { height: 6px; border-radius: 99px; background: var(--paper); overflow: hidden; min-width: 62px; }
+.meter i { display: block; height: 100%; border-radius: 99px; }
+.reasons { font-size: 12px; color: var(--ink-70); }
+
+/* ---------- Projection control ---------- */
+.proj { display: flex; flex-direction: column; gap: 14px; }
+.proj .targets { display: flex; gap: 6px; flex-wrap: wrap; }
+.proj .targets button {
+  border: 1px solid var(--line-firm); background: var(--chalk);
+  padding: 7px 12px; border-radius: 8px; font-size: 13px;
+}
+.proj .targets button[aria-pressed="true"] { background: var(--moss); border-color: var(--moss); color: #fff; font-weight: 600; }
+.proj .verdict { font-size: 14px; line-height: 1.6; }
+.proj .verdict .big { font-family: var(--mono); font-size: 30px; display: block; margin: 4px 0 2px; letter-spacing: -.03em; }
+.proj .note { font-size: 12.5px; color: var(--ink-45); }
+.proj .note.warn { color: var(--alert); }
+
+/* ---------- Charts ---------- */
+.chart { width: 100%; height: auto; display: block; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--ink-70); margin-top: 10px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+
+/* ---------- Filter row ---------- */
+.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 0 18px 14px; }
+.filters input[type="search"] {
+  font: inherit; font-size: 13px; padding: 7px 11px; border-radius: 8px;
+  border: 1px solid var(--line-firm); background: var(--chalk); min-width: 190px; flex: 1;
+}
+.filters input:focus-visible, select:focus-visible, button:focus-visible {
+  outline: 2px solid var(--moss); outline-offset: 2px;
+}
+
+.empty { padding: 34px 18px; text-align: center; color: var(--ink-45); font-size: 13.5px; }
+
+.strip { display: flex; gap: 10px; flex-wrap: wrap; }
+.strip .item { background: var(--paper); border-radius: 8px; padding: 10px 13px; flex: 1; min-width: 128px; }
+.strip .item .k { font-size: 11px; color: var(--ink-45); }
+.strip .item .v { font-family: var(--mono); font-size: 17px; margin-top: 2px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1080px) {
+  .g-4 { grid-template-columns: repeat(2, 1fr); }
+  .g-32, .g-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 820px) {
+  .shell { grid-template-columns: 1fr; }
+  .rail {
+    position: static; height: auto; flex-direction: row; align-items: center;
+    gap: 14px; padding: 12px 16px; overflow-x: auto;
+  }
+  .rail .nav-label, .rail-foot { display: none; }
+  .brand { flex: none; }
+  .brand h1 { font-size: 15px; }
+  .nav { flex-direction: row; gap: 4px; }
+  .nav button { padding: 8px 11px; white-space: nowrap; font-size: 13px; }
+  .topbar { padding: 12px 16px; gap: 12px; }
+  .topbar .ctx { flex: 1 0 100%; }
+  .content { padding: 16px 16px 48px; gap: 16px; }
+  .grid { gap: 14px; }
+  .g-4 { grid-template-columns: repeat(2, 1fr); }
+  .stat .v { font-size: 23px; }
+  table.data th, table.data td { padding-left: 14px; padding-right: 14px; }
+}
+@media (max-width: 520px) {
+  .g-4 { grid-template-columns: 1fr; }
+  .brand span { display: none; }
+  .classrail .band span { font-size: 8px; letter-spacing: 0; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .view { animation: rise .32s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .classrail .marker { animation: slide .6s cubic-bezier(.22,1,.36,1) both; }
+  @keyframes slide { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* ============================================================
+   Sign-in gate
+   ============================================================ */
+.gate { display: grid; grid-template-columns: 1.05fr 1fr; min-height: 100vh; }
+.gate[hidden] { display: none; }
+body.locked .shell { display: none; }
+
+.gate-aside {
+  background: var(--ink); color: #D7E2DB;
+  padding: 46px 44px; display: flex; flex-direction: column; gap: 26px;
+}
+.gate-aside .brand h1 { font-size: 20px; }
+.gate-aside .pitch {
+  font-family: var(--display); font-size: 30px; line-height: 1.22; color: #F2F7F4;
+  margin: auto 0 0; max-width: 15ch; font-variation-settings: 'opsz' 40, 'WONK' 1;
+}
+.gate-aside .sub { font-size: 13.5px; color: var(--sage); max-width: 34ch; line-height: 1.6; margin: 0; }
+.gate-aside .foot { margin-top: auto; font-size: 11.5px; color: #5E7A6C; line-height: 1.6; }
+
+.gate-form { display: flex; align-items: center; justify-content: center; padding: 40px 34px; background: var(--chalk); }
+.gate-form .inner { width: 100%; max-width: 372px; }
+.gate-form h2 { font-family: var(--display); font-size: 25px; margin: 0 0 4px; font-variation-settings: 'opsz' 30; }
+.gate-form .lede { font-size: 13.5px; color: var(--ink-45); margin: 0 0 26px; }
+
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-45); margin-bottom: 6px; }
+.field input {
+  width: 100%; font: inherit; font-size: 14px; padding: 11px 13px;
+  border: 1px solid var(--line-firm); border-radius: 9px; background: var(--chalk); color: var(--ink);
+}
+.field input:focus-visible { outline: 2px solid var(--moss); outline-offset: 1px; border-color: var(--moss); }
+
+.gate-form .go {
+  width: 100%; margin-top: 8px; padding: 12px; border: 0; border-radius: 9px;
+  background: var(--moss); color: #fff; font-weight: 600; font-size: 14.5px;
+}
+.gate-form .go:hover { background: var(--moss-solid); }
+
+.gate-err {
+  display: none; margin-bottom: 14px; padding: 10px 13px; border-radius: 9px;
+  background: var(--alert-wash); color: var(--alert); font-size: 13px;
+}
+.gate-err[data-on="1"] { display: block; }
+
+.demo-accounts {
+  margin-top: 28px;
+  border: 1.5px solid var(--moss);
+  border-radius: 13px;
+  background: var(--paper);
+  padding: 15px 15px 12px;
+}
+.demo-accounts .k {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--moss); font-weight: 700; margin-bottom: 4px;
+}
+.demo-accounts .k::before {
+  content: 'Demo'; letter-spacing: .06em; font-size: 9.5px;
+  background: var(--moss); color: #fff; padding: 2.5px 7px; border-radius: 5px;
+}
+.demo-accounts .hint { font-size: 12.5px; color: var(--ink-70); margin: 0 0 13px; line-height: 1.45; }
+
+.demo-accounts button {
+  display: grid; grid-template-columns: 30px 1fr 16px; align-items: center; gap: 11px;
+  width: 100%; text-align: left; margin-bottom: 8px;
+  border: 1px solid var(--line-firm); background: var(--chalk);
+  border-radius: 10px; padding: 11px 13px;
+  transition: border-color .12s, background .12s, transform .12s;
+}
+.demo-accounts button:last-child { margin-bottom: 0; }
+.demo-accounts button:hover { border-color: var(--moss); background: var(--sage-wash); transform: translateX(2px); }
+.demo-accounts button:hover .arw { color: var(--moss); }
+
+.demo-accounts .dot {
+  width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+  color: #fff; font-size: 12px; font-weight: 700; font-family: var(--body);
+}
+.demo-accounts b { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+.demo-accounts span.cred {
+  display: block; font-family: var(--mono); font-size: 11.5px; color: var(--ink-70);
+  margin-top: 3px; word-break: break-all; line-height: 1.4;
+}
+.demo-accounts span.cred em { font-style: normal; color: var(--moss); font-weight: 600; }
+.demo-accounts .arw { color: var(--ink-45); font-size: 15px; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-accounts button:hover { transform: none; }
+}
+
+.session { display: flex; align-items: center; gap: 10px; }
+.session .who2 { text-align: right; line-height: 1.25; }
+.session .who2 b { display: block; font-size: 13px; font-weight: 600; }
+.session .who2 span { font-size: 11px; color: var(--ink-45); }
+.session .av {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--moss); color: #fff;
+  display: grid; place-items: center; font-size: 13px; font-weight: 600; flex: none;
+}
+.session .out {
+  border: 1px solid var(--line-firm); background: var(--chalk); border-radius: 8px;
+  padding: 7px 12px; font-size: 13px; color: var(--ink-70);
+}
+.session .out:hover { border-color: var(--alert); color: var(--alert); }
+
+@media (max-width: 860px) {
+  .gate { grid-template-columns: 1fr; }
+  .gate-aside { padding: 28px 24px; gap: 16px; }
+  .gate-aside .pitch { font-size: 23px; margin-top: 8px; }
+  .gate-aside .foot { display: none; }
+  .gate-form { padding: 28px 22px 46px; }
+  .session .who2 { display: none; }
+}
+
+</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='15' fill='%230F1F1A'/><text x='16' y='22' font-size='16' fill='%23fff' text-anchor='middle' font-family='Georgia'>A</text></svg>">
+</head>
+<body class="locked">
+
+
+<!-- ============================ SIGN IN ============================ -->
+<div class="gate" id="gate">
+  <aside class="gate-aside">
+    <div class="brand">
+      <div class="seal">A</div>
+      <div><h1>Academic Standing</h1><span>Caritas University</span></div>
+    </div>
+    <p class="pitch">Know who is falling behind before the results are released.</p>
+    <p class="sub">CGPA tracking, attendance correlation and a weekly at-risk register for the Department of Computer Science.</p>
+    <div class="foot">Demo build. Every name and figure is generated. No real student data is stored.</div>
+  </aside>
+
+  <div class="gate-form">
+    <div class="inner">
+      <h2>Sign in</h2>
+      <p class="lede">Use your staff email, or your matriculation number if you are a student.</p>
+
+      <div class="gate-err" id="gate-err"></div>
+
+      <div class="field">
+        <label for="uid">Email or matriculation number</label>
+        <input id="uid" type="text" autocomplete="username" spellcheck="false" placeholder="hod.csc@caritas.edu.ng">
+      </div>
+      <div class="field">
+        <label for="pwd">Password</label>
+        <input id="pwd" type="password" autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <button class="go" id="go">Sign in</button>
+
+      <div class="demo-accounts">
+        <div class="k">Accounts</div>
+        <p class="hint">No account needed to look around. Tap any role below to fill the form, then sign in.</p>
+
+        <button data-fill="hod.csc@caritas.edu.ng|Admin@2026">
+          <span class="dot" style="background:var(--moss)">HD</span>
+          <span>
+            <b>Head of Department</b>
+            <span class="cred">hod.csc@caritas.edu.ng &nbsp;·&nbsp; <em>Admin@2026</em></span>
+          </span>
+          <span class="arw">&rarr;</span>
+        </button>
+
+        <button data-fill="a.nwachukwu@caritas.edu.ng|Lecturer@2026">
+          <span class="dot" style="background:var(--moss-mid)">LC</span>
+          <span>
+            <b>Lecturer &mdash; Dr. A. Nwachukwu</b>
+            <span class="cred">a.nwachukwu@caritas.edu.ng &nbsp;·&nbsp; <em>Lecturer@2026</em></span>
+          </span>
+          <span class="arw">&rarr;</span>
+        </button>
+
+        <button data-fill="CU/2022/SEN/018|Student@2026">
+          <span class="dot" style="background:var(--sage)">ST</span>
+          <span>
+            <b>Student &mdash; 500 Level</b>
+            <span class="cred">CU/2022/SEN/018 &nbsp;·&nbsp; <em>Student@2026</em></span>
+          </span>
+          <span class="arw">&rarr;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <div class="seal">A</div>
+      <div>
+        <h1>Academic Standing</h1>
+        <span>Caritas University</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav" id="nav"></nav>
+    </div>
+
+    <div class="rail-foot">
+      Demo build. Figures are generated, not real student data.
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="ctx">
+        <h2 id="ctx-title">Department overview</h2>
+        <p id="ctx-sub"></p>
+      </div>
+
+      <select class="picker" id="session-pick" aria-label="Academic session">
+        <option value="2025/2026">2025/2026 session</option>
+        <option value="2024/2025">2024/2025 session</option>
+        <option value="2023/2024">2023/2024 session</option>
+        <option value="2022/2023">2022/2023 session</option>
+      </select>
+
+      <div class="session">
+        <div class="who2"><b id="who-name">—</b><span id="who-role">—</span></div>
+        <div class="av" id="who-av">—</div>
+        <button class="out" id="signout">Sign out</button>
+      </div>
+    </header>
+
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   Academic Standing — demo dataset
+   Deterministic seeded generator. Numbers never change on reload.
+   Replace this file with real API calls when going to production.
+   ============================================================ */
+(function () {
+'use strict';
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = mulberry32(20260724);
+const rnd = (min, max) => min + rand() * (max - min);
+const pick = (arr) => arr[Math.floor(rand() * arr.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+/* ---------- Grading: Nigerian 5.0 scale ---------- */
+const GRADE_BANDS = [
+  { min: 70, letter: 'A', point: 5 },
+  { min: 60, letter: 'B', point: 4 },
+  { min: 50, letter: 'C', point: 3 },
+  { min: 45, letter: 'D', point: 2 },
+  { min: 40, letter: 'E', point: 1 },
+  { min: 0,  letter: 'F', point: 0 },
+];
+function gradeOf(score) {
+  return GRADE_BANDS.find((b) => score >= b.min);
+}
+
+const DEGREE_CLASSES = [
+  { key: 'first',  label: 'First Class',   min: 4.50, max: 5.00 },
+  { key: 'second_upper', label: 'Second Class Upper', min: 3.50, max: 4.49 },
+  { key: 'second_lower', label: 'Second Class Lower', min: 2.40, max: 3.49 },
+  { key: 'third', label: 'Third Class',    min: 1.50, max: 2.39 },
+  { key: 'pass',  label: 'Pass',           min: 1.00, max: 1.49 },
+  { key: 'fail',  label: 'Below Pass',     min: 0.00, max: 0.99 },
+];
+function degreeClass(cgpa) {
+  return DEGREE_CLASSES.find((c) => cgpa >= c.min) || DEGREE_CLASSES[DEGREE_CLASSES.length - 1];
+}
+
+/* ---------- Structure ---------- */
+const SESSIONS = ['2022/2023', '2023/2024', '2024/2025', '2025/2026'];
+const SEMESTERS = ['First', 'Second'];
+const PROGRAMMES = [
+  { code: 'CSC', name: 'Computer Science' },
+  { code: 'SEN', name: 'Software Engineering' },
+  { code: 'CYB', name: 'Cyber Security' },
+];
+
+const COURSE_BANK = [
+  // level, semester, code, title, unit, area, difficulty (mean shift)
+  [200, 'First',  'CSC 201', 'Computer Programming I',        3, 'Programming',  -2],
+  [200, 'First',  'CSC 203', 'Discrete Structures',           3, 'Theory',       -9],
+  [200, 'First',  'MTH 201', 'Linear Algebra',                3, 'Mathematics', -11],
+  [200, 'First',  'GST 201', 'Use of English II',             2, 'General',      +8],
+  [200, 'Second', 'CSC 202', 'Computer Programming II',       3, 'Programming',  -3],
+  [200, 'Second', 'CSC 204', 'Digital Logic Design',          3, 'Systems',      -5],
+  [200, 'Second', 'MTH 202', 'Statistics for Computing',      3, 'Mathematics',  -8],
+  [200, 'Second', 'ENT 202', 'Entrepreneurship Studies',      2, 'General',      +9],
+  [300, 'First',  'CSC 301', 'Data Structures & Algorithms',  4, 'Programming', -10],
+  [300, 'First',  'CSC 303', 'Operating Systems',             3, 'Systems',      -6],
+  [300, 'First',  'CSC 305', 'Database Management Systems',   3, 'Data',         -1],
+  [300, 'First',  'CSC 307', 'Systems Analysis & Design',     3, 'Theory',       +3],
+  [300, 'Second', 'CSC 302', 'Object Oriented Programming',   3, 'Programming',  -2],
+  [300, 'Second', 'CSC 304', 'Computer Architecture',         3, 'Systems',      -7],
+  [300, 'Second', 'CSC 306', 'Web Application Development',   3, 'Programming',  +6],
+  [300, 'Second', 'CSC 308', 'Numerical Analysis',            3, 'Mathematics', -12],
+  [400, 'First',  'CSC 401', 'Software Engineering',          3, 'Theory',       +2],
+  [400, 'First',  'CSC 403', 'Computer Networks',             3, 'Systems',      -4],
+  [400, 'First',  'CSC 405', 'Compiler Construction',         3, 'Theory',      -13],
+  [400, 'First',  'CSC 407', 'Artificial Intelligence',       3, 'Data',         -3],
+  [400, 'Second', 'CSC 402', 'Distributed Systems',           3, 'Systems',      -6],
+  [400, 'Second', 'CSC 404', 'Machine Learning',              3, 'Data',         -5],
+  [400, 'Second', 'CSC 406', 'Information Security',          3, 'Systems',      +1],
+  [400, 'Second', 'CSC 408', 'Human Computer Interaction',    2, 'Theory',      +10],
+  [500, 'First',  'CSC 501', 'Research Methodology',          2, 'Theory',       +5],
+  [500, 'First',  'CSC 503', 'Cloud & Virtualisation',        3, 'Systems',      -2],
+  [500, 'First',  'CSC 505', 'Data Mining',                   3, 'Data',         -4],
+  [500, 'Second', 'CSC 502', 'Final Year Project',            6, 'Project',      +7],
+  [500, 'Second', 'CSC 504', 'Professional Ethics in ICT',    2, 'General',     +11],
+];
+
+const COURSES = COURSE_BANK.map(([level, semester, code, title, unit, area, diff], i) => ({
+  id: 'c' + i, level, semester, code, title, unit, area, diff,
+}));
+
+const LECTURERS = [
+  { id: 'L1', name: 'Dr. A. Nwachukwu',  courses: ['CSC 301', 'CSC 302', 'CSC 405'] },
+  { id: 'L2', name: 'Mr. C. Obiora',     courses: ['CSC 305', 'CSC 306', 'CSC 505'] },
+  { id: 'L3', name: 'Dr. F. Adeyemi',    courses: ['CSC 403', 'CSC 402', 'CSC 503'] },
+  { id: 'L4', name: 'Mrs. B. Eze',       courses: ['CSC 407', 'CSC 404', 'CSC 401'] },
+];
+
+/* ---------- Names ---------- */
+const FIRST = ['Chidera','Emeka','Ngozi','Tunde','Amaka','Ifeanyi','Zainab','Bola','Uche','Kelechi','Halima','Segun','Adaeze','Musa','Oluchi','Yusuf','Chinaza','Damilola','Ebere','Nnamdi','Fatima','Obinna','Temitope','Ada','Ikenna','Rukayat','Sopuruchi','Blessing','Chukwuemeka','Precious','Somtochukwu','Abiola','Ifeoma','Gbenga','Chiamaka','Idris','Nkechi','Femi','Onyeka','Aisha'];
+const LAST = ['Okafor','Adeyemi','Balogun','Nwosu','Eze','Okonkwo','Abubakar','Ogunleye','Chukwu','Danjuma','Uzoma','Afolabi','Ibrahim','Nnaji','Olawale','Anyanwu','Bello','Onyekachi','Salami','Madu','Ogbonna','Lawal','Emenike','Akintola','Njoku','Yakubu','Ezeani','Adeleke','Mbah','Ojo'];
+
+/* ---------- Students ---------- */
+const STUDENTS = [];
+const N = 148;
+for (let i = 0; i < N; i++) {
+  const level = pick([200, 300, 400, 500]);
+  const prog = pick(PROGRAMMES);
+  const entryYear = 2026 - (level / 100 - 1);
+  const ability = clamp(rnd(38, 82) + (rand() < 0.12 ? rnd(-14, -6) : 0), 25, 92);
+  const trend = rnd(-3.2, 3.2);
+  const attendance = clamp(Math.round(ability * 0.75 + rnd(8, 34)), 32, 99);
+  STUDENTS.push({
+    id: 'S' + String(i + 1).padStart(3, '0'),
+    matric: `CU/${entryYear}/${prog.code}/${String(1000 + i).slice(1)}`,
+    name: `${pick(FIRST)} ${pick(LAST)}`,
+    level, programme: prog.name, programmeCode: prog.code,
+    ability, trend, attendance,
+    semesters: [], cgpa: 0, carryovers: [], riskScore: 0, riskReasons: [],
+  });
+}
+
+/* ---------- Result generation ---------- */
+function semesterKeysFor(level) {
+  // A 400L student has completed 200L(2) + 300L(2) + 400L first = 5 records
+  const levels = [200, 300, 400, 500].filter((l) => l <= level);
+  const keys = [];
+  levels.forEach((l, li) => {
+    const sems = l === level ? ['First'] : ['First', 'Second'];
+    sems.forEach((s) => keys.push({ level: l, semester: s, index: li, span: levels.length }));
+  });
+  return keys;
+}
+
+STUDENTS.forEach((st) => {
+  const keys = semesterKeysFor(st.level);
+  let totalPoints = 0, totalUnits = 0;
+  keys.forEach((k, ki) => {
+    const courses = COURSES.filter((c) => c.level === k.level && c.semester === k.semester);
+    const drift = st.trend * (ki / Math.max(1, keys.length - 1)) * 6;
+    let semPoints = 0, semUnits = 0;
+    const rows = courses.map((c) => {
+      const target = clamp(st.ability + drift + c.diff + rnd(-9, 9), 8, 99);
+      const ca = clamp(Math.round(target * 0.3 + rnd(-3, 4)), 0, 30);
+      const exam = clamp(Math.round(target * 0.7 + rnd(-7, 7)), 0, 70);
+      const total = ca + exam;
+      const g = gradeOf(total);
+      semPoints += g.point * c.unit;
+      semUnits += c.unit;
+      return { code: c.code, title: c.title, unit: c.unit, area: c.area, ca, exam, total, letter: g.letter, point: g.point };
+    });
+    totalPoints += semPoints; totalUnits += semUnits;
+    st.semesters.push({
+      label: `${k.level}L ${k.semester}`,
+      level: k.level, semester: k.semester,
+      session: SESSIONS[SESSIONS.length - k.span + k.index],
+      gpa: +(semPoints / semUnits).toFixed(2),
+      cgpa: +(totalPoints / totalUnits).toFixed(2),
+      units: semUnits,
+      rows,
+    });
+  });
+  st.cgpa = +(totalPoints / totalUnits).toFixed(2);
+  st.unitsEarned = totalUnits;
+  st.carryovers = st.semesters.flatMap((s) => s.rows.filter((r) => r.letter === 'F').map((r) => ({ ...r, when: s.label })));
+});
+
+/* ---------- Risk engine (rule-based, no ML claimed) ---------- */
+STUDENTS.forEach((st) => {
+  const reasons = [];
+  let score = 0;
+
+  const cgpaGap = clamp((3.5 - st.cgpa) / 3.5, 0, 1);
+  score += cgpaGap * 40;
+  if (st.cgpa < 1.5) reasons.push('CGPA below 1.50');
+  else if (st.cgpa < 2.4) reasons.push('CGPA below Second Class Lower');
+
+  const n = st.semesters.length;
+  const drop = n >= 2 ? st.semesters[n - 2].gpa - st.semesters[n - 1].gpa : 0;
+  if (drop >= 0.5) { score += 20; reasons.push(`GPA fell ${drop.toFixed(2)} last semester`); }
+  else if (drop >= 0.25) { score += 10; reasons.push('GPA declining'); }
+
+  const attGap = clamp((70 - st.attendance) / 70, 0, 1);
+  score += attGap * 25;
+  if (st.attendance < 60) reasons.push(`Attendance ${st.attendance}%`);
+
+  const co = st.carryovers.length;
+  score += (Math.min(co, 4) / 4) * 15;
+  if (co >= 2) reasons.push(`${co} outstanding carryovers`);
+  else if (co === 1) reasons.push('1 outstanding carryover');
+
+  st.gpaDelta = +(-drop).toFixed(2);
+  st.riskScore = Math.round(clamp(score, 0, 100));
+  st.riskReasons = reasons.length ? reasons : ['No flags'];
+  st.riskBand = st.riskScore >= 60 ? 'high' : st.riskScore >= 35 ? 'watch' : 'clear';
+});
+
+/* ---------- Course difficulty index ---------- */
+const COURSE_STATS = COURSES.map((c) => {
+  const scores = [];
+  STUDENTS.forEach((st) => st.semesters.forEach((s) => s.rows.forEach((r) => {
+    if (r.code === c.code) scores.push(r.total);
+  })));
+  if (!scores.length) return null;
+  const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+  const sd = Math.sqrt(scores.reduce((a, b) => a + (b - mean) ** 2, 0) / scores.length);
+  const fails = scores.filter((s) => s < 40).length;
+  return {
+    ...c,
+    sat: scores.length,
+    mean: +mean.toFixed(1),
+    sd: +sd.toFixed(1),
+    failRate: +((fails / scores.length) * 100).toFixed(1),
+    scores,
+  };
+}).filter(Boolean).sort((a, b) => b.failRate - a.failRate);
+
+/* ---------- Department aggregates ---------- */
+function pearson(xs, ys) {
+  const n = xs.length;
+  const mx = xs.reduce((a, b) => a + b, 0) / n;
+  const my = ys.reduce((a, b) => a + b, 0) / n;
+  let num = 0, dx = 0, dy = 0;
+  for (let i = 0; i < n; i++) {
+    num += (xs[i] - mx) * (ys[i] - my);
+    dx += (xs[i] - mx) ** 2; dy += (ys[i] - my) ** 2;
+  }
+  return num / Math.sqrt(dx * dy);
+}
+
+const DEPT = {
+  enrolled: STUDENTS.length,
+  meanCgpa: +(STUDENTS.reduce((a, s) => a + s.cgpa, 0) / STUDENTS.length).toFixed(2),
+  atRisk: STUDENTS.filter((s) => s.riskBand !== 'clear').length,
+  highRisk: STUDENTS.filter((s) => s.riskBand === 'high').length,
+  goodStanding: +((STUDENTS.filter((s) => s.cgpa >= 2.4).length / STUDENTS.length) * 100).toFixed(1),
+  meanAttendance: Math.round(STUDENTS.reduce((a, s) => a + s.attendance, 0) / STUDENTS.length),
+  r: +pearson(STUDENTS.map((s) => s.attendance), STUDENTS.map((s) => s.cgpa)).toFixed(2),
+  classSpread: DEGREE_CLASSES.map((c) => ({
+    label: c.label,
+    key: c.key,
+    count: STUDENTS.filter((s) => degreeClass(s.cgpa).key === c.key).length,
+  })),
+};
+
+/* ---------- Focus student for the Student role ---------- */
+const ME = STUDENTS.filter((s) => s.level === 500 && s.semesters.length >= 5)
+  .sort((a, b) => Math.abs(a.cgpa - 3.42) - Math.abs(b.cgpa - 3.42))[0] || STUDENTS[0];
+
+/* remaining units for projection: 500L Second semester */
+const REMAINING = COURSES.filter((c) => c.level === 500 && c.semester === 'Second');
+const REMAINING_UNITS = REMAINING.reduce((a, c) => a + c.unit, 0);
+
+window.DB = {
+  STUDENTS, COURSES, COURSE_STATS, LECTURERS, DEPT, ME,
+  SESSIONS, SEMESTERS, PROGRAMMES, DEGREE_CLASSES, REMAINING, REMAINING_UNITS,
+  gradeOf, degreeClass, pearson,
+};
+})();
+
+</script>
+
+<script>
+/* ============================================================
+   Charts — plain SVG, no dependencies.
+   Every chart returns an SVG string sized by viewBox so it scales.
+   ============================================================ */
+(function () {
+'use strict';
+const _cs = getComputedStyle(document.documentElement);
+const _v = (n) => _cs.getPropertyValue(n).trim();
+const C = {
+  moss:   _v('--moss')      || '#1C5C43',
+  mossMid:_v('--moss-mid')  || '#2F7A5C',
+  sage:   _v('--sage')      || '#6E9B85',
+  wash:   _v('--sage-wash') || '#DCE7E0',
+  ink:    _v('--ink')       || '#0F1F1A',
+  ink45:  _v('--ink-45')    || '#7B8A83',
+  amber:  _v('--amber')     || '#B8801F',
+  gold:   _v('--gold')      || '#C79A4E',
+  alert:  _v('--alert')     || '#A82B24',
+  paper:  _v('--paper')     || '#EDF0EB',
+  line:   _v('--line')      || 'rgba(15,31,26,.12)',
+};
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* ---------- Line chart: GPA per semester with CGPA overlay ---------- */
+function lineChart(labels, series, opts = {}) {
+  const W = 720, H = 260;
+  const p = { t: 18, r: 16, b: 34, l: 34 };
+  const min = opts.min ?? 0, max = opts.max ?? 5;
+  const iw = W - p.l - p.r, ih = H - p.t - p.b;
+  const x = (i) => p.l + (labels.length === 1 ? iw / 2 : (i / (labels.length - 1)) * iw);
+  const y = (v) => p.t + ih - ((v - min) / (max - min)) * ih;
+
+  let g = '';
+  for (let v = min; v <= max; v += (max - min) / 5) {
+    g += `<line x1="${p.l}" x2="${W - p.r}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="${C.line}"/>
+          <text x="${p.l - 8}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end" font-size="10.5" fill="${C.ink45}" font-family="IBM Plex Mono, monospace">${v.toFixed(1)}</text>`;
+  }
+  labels.forEach((l, i) => {
+    g += `<text x="${x(i).toFixed(1)}" y="${H - 10}" text-anchor="middle" font-size="10.5" fill="${C.ink45}" font-family="Public Sans, sans-serif">${esc(l)}</text>`;
+  });
+
+  let paths = '';
+  series.forEach((s) => {
+    const pts = s.values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+    if (s.area) {
+      paths += `<polygon points="${p.l},${y(min)} ${pts.join(' ')} ${x(s.values.length - 1)},${y(min)}" fill="${s.color}" opacity=".10"/>`;
+    }
+    paths += `<polyline points="${pts.join(' ')}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2.4}" stroke-linejoin="round" stroke-linecap="round" ${s.dash ? `stroke-dasharray="${s.dash}"` : ''}/>`;
+    s.values.forEach((v, i) => {
+      paths += `<circle cx="${x(i).toFixed(1)}" cy="${y(v).toFixed(1)}" r="4" fill="#fff" stroke="${s.color}" stroke-width="2.2"><title>${esc(s.name)} · ${esc(labels[i])}: ${v.toFixed(2)}</title></circle>`;
+    });
+  });
+
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.alt || 'Line chart')}">${g}${paths}</svg>`;
+}
+
+/* ---------- Horizontal bar chart: degree class spread ---------- */
+function classBars(rows, total) {
+  const colors = {
+    first: C.moss, second_upper: C.mossMid, second_lower: C.sage,
+    third: C.amber, pass: C.gold, fail: C.alert,
+  };
+  const max = Math.max(...rows.map((r) => r.count), 1);
+  return `<div style="display:flex;flex-direction:column;gap:11px">` + rows.map((r) => `
+    <div style="display:grid;grid-template-columns:132px 1fr 62px;align-items:center;gap:12px">
+      <div style="font-size:12.5px;color:var(--ink-70)">${esc(r.label)}</div>
+      <div class="meter" style="height:14px"><i style="width:${(r.count / max) * 100}%;background:${colors[r.key]}"></i></div>
+      <div class="num" style="font-size:12.5px;text-align:right">${r.count} <span style="color:var(--ink-45)">· ${((r.count / total) * 100).toFixed(0)}%</span></div>
+    </div>`).join('') + `</div>`;
+}
+
+/* ---------- Scatter: attendance vs CGPA with fitted line ---------- */
+function scatter(points, r) {
+  const W = 720, H = 280;
+  const p = { t: 16, r: 16, b: 40, l: 42 };
+  const iw = W - p.l - p.r, ih = H - p.t - p.b;
+  const xmin = 30, xmax = 100, ymin = 0, ymax = 5;
+  const X = (v) => p.l + ((v - xmin) / (xmax - xmin)) * iw;
+  const Y = (v) => p.t + ih - ((v - ymin) / (ymax - ymin)) * ih;
+
+  let g = '';
+  for (let v = 0; v <= 5; v++) {
+    g += `<line x1="${p.l}" x2="${W - p.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${C.line}"/>
+          <text x="${p.l - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="10.5" fill="${C.ink45}" font-family="IBM Plex Mono, monospace">${v}</text>`;
+  }
+  for (let v = 40; v <= 100; v += 20) {
+    g += `<text x="${X(v)}" y="${H - 16}" text-anchor="middle" font-size="10.5" fill="${C.ink45}" font-family="IBM Plex Mono, monospace">${v}%</text>`;
+  }
+  g += `<text x="${p.l + iw / 2}" y="${H - 2}" text-anchor="middle" font-size="11" fill="${C.ink45}" font-family="Public Sans, sans-serif">Attendance</text>`;
+
+  const dots = points.map((pt) => {
+    const col = pt.band === 'high' ? C.alert : pt.band === 'watch' ? C.amber : C.moss;
+    return `<circle cx="${X(pt.x).toFixed(1)}" cy="${Y(pt.y).toFixed(1)}" r="3.6" fill="${col}" opacity=".62"><title>${esc(pt.label)} — ${pt.x}% attendance, ${pt.y.toFixed(2)} CGPA</title></circle>`;
+  }).join('');
+
+  // least squares fit
+  const n = points.length;
+  const mx = points.reduce((a, b) => a + b.x, 0) / n;
+  const my = points.reduce((a, b) => a + b.y, 0) / n;
+  let num = 0, den = 0;
+  points.forEach((pt) => { num += (pt.x - mx) * (pt.y - my); den += (pt.x - mx) ** 2; });
+  const slope = num / den, intercept = my - slope * mx;
+  const fit = `<line x1="${X(xmin)}" y1="${Y(slope * xmin + intercept)}" x2="${X(xmax)}" y2="${Y(slope * xmax + intercept)}" stroke="${C.ink}" stroke-width="2" stroke-dasharray="6 5" opacity=".72"/>`;
+
+  const badge = `<g transform="translate(${W - p.r - 128},${p.t + 6})">
+    <rect width="128" height="26" rx="6" fill="${C.paper}"/>
+    <text x="10" y="17" font-size="11.5" fill="${C.ink}" font-family="IBM Plex Mono, monospace">r = ${r.toFixed(2)}</text>
+    <text x="62" y="17" font-size="10.5" fill="${C.ink45}" font-family="Public Sans, sans-serif">${Math.abs(r) > .5 ? 'strong' : Math.abs(r) > .3 ? 'moderate' : 'weak'}</text>
+  </g>`;
+
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Attendance against CGPA scatter plot">${g}${dots}${fit}${badge}</svg>`;
+}
+
+/* ---------- Column chart: score distribution for one course ---------- */
+function histogram(scores) {
+  const W = 720, H = 220;
+  const p = { t: 14, r: 14, b: 34, l: 34 };
+  const iw = W - p.l - p.r, ih = H - p.t - p.b;
+  const bins = [[0, 39, 'F'], [40, 44, 'E'], [45, 49, 'D'], [50, 59, 'C'], [60, 69, 'B'], [70, 100, 'A']];
+  const counts = bins.map(([lo, hi]) => scores.filter((s) => s >= lo && s <= hi).length);
+  const max = Math.max(...counts, 1);
+  const bw = iw / bins.length;
+
+  let out = '';
+  for (let i = 0; i <= 4; i++) {
+    const yy = p.t + ih - (i / 4) * ih;
+    out += `<line x1="${p.l}" x2="${W - p.r}" y1="${yy}" y2="${yy}" stroke="${C.line}"/>
+            <text x="${p.l - 8}" y="${yy + 4}" text-anchor="end" font-size="10.5" fill="${C.ink45}" font-family="IBM Plex Mono, monospace">${Math.round((i / 4) * max)}</text>`;
+  }
+  bins.forEach(([lo, hi, letter], i) => {
+    const h = (counts[i] / max) * ih;
+    const col = letter === 'F' ? C.alert : letter === 'E' || letter === 'D' ? C.amber : C.moss;
+    out += `<rect x="${(p.l + i * bw + bw * .16).toFixed(1)}" y="${(p.t + ih - h).toFixed(1)}" width="${(bw * .68).toFixed(1)}" height="${Math.max(h, 1).toFixed(1)}" rx="4" fill="${col}" opacity=".88"><title>${letter} (${lo}–${hi}): ${counts[i]} students</title></rect>
+      <text x="${(p.l + i * bw + bw / 2).toFixed(1)}" y="${H - 18}" text-anchor="middle" font-size="12" font-weight="600" fill="${C.ink}" font-family="IBM Plex Mono, monospace">${letter}</text>
+      <text x="${(p.l + i * bw + bw / 2).toFixed(1)}" y="${H - 5}" text-anchor="middle" font-size="9.5" fill="${C.ink45}" font-family="Public Sans, sans-serif">${lo}–${hi}</text>`;
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Score distribution by grade">${out}</svg>`;
+}
+
+/* ---------- Radial-free strength map: horizontal bars by course area ---------- */
+function areaBars(areas) {
+  const max = 5;
+  return `<div style="display:flex;flex-direction:column;gap:10px">` + areas.map((a) => {
+    const col = a.avg >= 4 ? C.moss : a.avg >= 3 ? C.sage : a.avg >= 2 ? C.amber : C.alert;
+    return `<div style="display:grid;grid-template-columns:104px 1fr 40px;align-items:center;gap:12px">
+      <div style="font-size:12.5px;color:var(--ink-70)">${esc(a.name)}</div>
+      <div class="meter" style="height:12px"><i style="width:${(a.avg / max) * 100}%;background:${col}"></i></div>
+      <div class="num" style="font-size:12.5px;text-align:right">${a.avg.toFixed(2)}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+window.CHART = { lineChart, classBars, scatter, histogram, areaBars, C };
+window.T = C;
+})();
+
+</script>
+
+<script>
+/* ============================================================
+   Academic Standing — application
+   ============================================================ */
+const { STUDENTS, COURSE_STATS, LECTURERS, DEGREE_CLASSES, REMAINING, REMAINING_UNITS, degreeClass } = window.DB;
+const { lineChart, classBars, scatter, histogram, areaBars } = window.CHART;
+const T = window.T;
+
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const el = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstElementChild; };
+
+/* ============================================================
+   1. ACCOUNTS
+   Demo only. In production these live in the database and the
+   password is hashed server-side — never shipped to the browser.
+   ============================================================ */
+const ACCOUNTS = [
+  { uid: 'hod.csc@caritas.edu.ng',     pwd: 'Admin@2026',    role: 'admin',    name: 'Prof. E. Okoro',     title: 'Head of Department' },
+  { uid: 'a.nwachukwu@caritas.edu.ng', pwd: 'Lecturer@2026', role: 'lecturer', name: 'Dr. A. Nwachukwu',   title: 'Lecturer', staffId: 'L1' },
+  { uid: 'CU/2022/SEN/018',            pwd: 'Student@2026',  role: 'student',  name: '',                   title: '500 Level Student' },
+];
+
+/* ============================================================
+   2. ACCESS POLICY
+   Every read of student data passes through scope(). A role can
+   never widen its own scope from the interface.
+   ============================================================ */
+const POLICY = {
+  admin:    { students: 'all',      courses: 'all',  scores: 'read-only' },
+  lecturer: { students: 'my-classes', courses: 'mine', scores: 'write' },
+  student:  { students: 'self',     courses: 'registered', scores: 'none' },
+};
+
+const SESSION = { user: null, role: null, subject: null };
+
+function scope(resource) {
+  if (!SESSION.role) throw new Error('Not signed in');
+  return POLICY[SESSION.role][resource];
+}
+
+/** The only way any view gets student records. */
+function roster() {
+  const rule = scope('students');
+  if (rule === 'self') return SESSION.subject ? [SESSION.subject] : [];
+  if (rule === 'my-classes') {
+    const mine = LECTURERS.find((l) => l.id === SESSION.user.staffId)?.courses || [];
+    return STUDENTS.filter((s) => s.semesters.some((sem) => sem.rows.some((r) => mine.includes(r.code))));
+  }
+  return STUDENTS;
+}
+
+/* ============================================================
+   3. SESSION SNAPSHOT
+   Everything is recomputed as of the selected academic session,
+   so the picker in the top bar is a real filter, not decoration.
+   ============================================================ */
+function asOf(st, session) {
+  const upto = st.semesters.filter((s) => s.session <= session);
+  if (!upto.length) return null;
+  const last = upto[upto.length - 1];
+  const prev = upto[upto.length - 2];
+  const carry = upto.flatMap((s) => s.rows.filter((r) => r.letter === 'F').map((r) => ({ ...r, when: s.label })));
+  const delta = prev ? +(last.gpa - prev.gpa).toFixed(2) : 0;
+
+  let score = 0; const why = [];
+  const gap = Math.max(0, Math.min(1, (3.5 - last.cgpa) / 3.5));
+  score += gap * 40;
+  if (last.cgpa < 1.5) why.push('CGPA below 1.50');
+  else if (last.cgpa < 2.4) why.push('CGPA below Second Class Lower');
+  if (delta <= -0.5) { score += 20; why.push(`GPA fell ${Math.abs(delta).toFixed(2)} last semester`); }
+  else if (delta <= -0.25) { score += 10; why.push('GPA declining'); }
+  const att = Math.max(0, Math.min(1, (70 - st.attendance) / 70));
+  score += att * 25;
+  if (st.attendance < 60) why.push(`Attendance ${st.attendance}%`);
+  score += (Math.min(carry.length, 4) / 4) * 15;
+  if (carry.length >= 2) why.push(`${carry.length} outstanding carryovers`);
+  else if (carry.length === 1) why.push('1 outstanding carryover');
+
+  const risk = Math.round(Math.max(0, Math.min(100, score)));
+  return {
+    ...st,
+    semesters: upto,
+    cgpa: last.cgpa, gpa: last.gpa, gpaDelta: delta,
+    unitsEarned: upto.reduce((a, s) => a + s.units, 0),
+    carryovers: carry,
+    riskScore: risk,
+    riskReasons: why.length ? why : ['No flags'],
+    riskBand: risk >= 60 ? 'high' : risk >= 35 ? 'watch' : 'clear',
+  };
+}
+
+function snapshot() {
+  return roster().map((s) => asOf(s, state.session)).filter(Boolean);
+}
+
+function deptStats(list) {
+  const pear = (xs, ys) => {
+    const n = xs.length, mx = xs.reduce((a, b) => a + b, 0) / n, my = ys.reduce((a, b) => a + b, 0) / n;
+    let num = 0, dx = 0, dy = 0;
+    for (let i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); dx += (xs[i] - mx) ** 2; dy += (ys[i] - my) ** 2; }
+    return num / Math.sqrt(dx * dy);
+  };
+  return {
+    enrolled: list.length,
+    meanCgpa: +(list.reduce((a, s) => a + s.cgpa, 0) / list.length).toFixed(2),
+    atRisk: list.filter((s) => s.riskBand !== 'clear').length,
+    highRisk: list.filter((s) => s.riskBand === 'high').length,
+    goodStanding: +((list.filter((s) => s.cgpa >= 2.4).length / list.length) * 100).toFixed(1),
+    meanAttendance: Math.round(list.reduce((a, s) => a + s.attendance, 0) / list.length),
+    r: +pear(list.map((s) => s.attendance), list.map((s) => s.cgpa)).toFixed(2),
+    classSpread: DEGREE_CLASSES.map((c) => ({
+      label: c.label, key: c.key,
+      count: list.filter((s) => degreeClass(s.cgpa).key === c.key).length,
+    })),
+  };
+}
+
+/* ============================================================
+   4. NAVIGATION
+   ============================================================ */
+const ICONS = {
+  gauge: '<path d="M2 12a10 10 0 0 1 20 0" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 12l5-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  flag: '<path d="M5 21V4m0 0h11l-2 4 2 4H5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+  book: '<path d="M4 4h7a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H4z M20 4h-7a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H20z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>',
+  people: '<circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5M16 11a3 3 0 1 0 0-6M18 20c0-2.4-.9-4.2-2.3-5.3" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+  chart: '<path d="M4 20V9M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  target: '<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/>',
+  clock: '<circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5.2l3.2 2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+};
+const icon = (k) => `<svg viewBox="0 0 24 24">${ICONS[k]}</svg>`;
+
+const ROLES = {
+  admin: { views: [
+    { id: 'overview', label: 'Overview', icon: 'gauge', head: ['Department overview', 'Computer Science'] },
+    { id: 'risk', label: 'At-risk register', icon: 'flag', head: ['At-risk register', 'Ranked by composite risk score'] },
+    { id: 'courses', label: 'Course index', icon: 'book', head: ['Course difficulty index', 'Where students are failing, and by how much'] },
+    { id: 'students', label: 'Students', icon: 'people', head: ['Student records', 'Every enrolled student'] },
+  ] },
+  lecturer: { views: [
+    { id: 'teaching', label: 'My courses', icon: 'book', head: ['My courses', 'Score entry and class performance'] },
+    { id: 'myclass', label: 'My students', icon: 'people', head: ['My students', 'Only students registered for courses you teach'] },
+  ] },
+  student: { views: [
+    { id: 'standing', label: 'My standing', icon: 'target', head: ['My academic standing', ''] },
+    { id: 'results', label: 'Results', icon: 'chart', head: ['Semester results', 'Every course, every semester'] },
+    { id: 'attendance', label: 'Attendance', icon: 'clock', head: ['Attendance', 'Attendance against performance'] },
+  ] },
+};
+
+let state = { view: 'overview', riskFilter: 'all', query: '', course: 'CSC 301', target: 'second_upper', session: '2025/2026' };
+
+/* ============================================================
+   5. AUTH
+   ============================================================ */
+function signIn(uid, pwd) {
+  const acct = ACCOUNTS.find((a) => a.uid.toLowerCase() === uid.trim().toLowerCase() && a.pwd === pwd);
+  if (!acct) return false;
+  SESSION.user = acct;
+  SESSION.role = acct.role;
+  SESSION.subject = acct.role === 'student' ? STUDENTS.find((s) => s.matric === acct.uid) : null;
+  if (acct.role === 'student' && SESSION.subject) acct.name = SESSION.subject.name;
+  state.view = ROLES[acct.role].views[0].id;
+  document.body.classList.remove('locked');
+  $('#gate').hidden = true;
+  render();
+  return true;
+}
+
+function signOut() {
+  SESSION.user = null; SESSION.role = null; SESSION.subject = null;
+  document.body.classList.add('locked');
+  $('#gate').hidden = false;
+  $('#uid').value = ''; $('#pwd').value = '';
+  $('#gate-err').removeAttribute('data-on');
+  $('#content').innerHTML = '';
+}
+
+function attempt() {
+  const ok = signIn($('#uid').value, $('#pwd').value);
+  if (!ok) {
+    const e = $('#gate-err');
+    e.textContent = 'That does not match any account. Check the identifier and password, or use one of the demo accounts below.';
+    e.setAttribute('data-on', '1');
+  }
+}
+$('#go').onclick = attempt;
+['#uid', '#pwd'].forEach((s) => $(s).addEventListener('keydown', (e) => { if (e.key === 'Enter') attempt(); }));
+document.querySelectorAll('.demo-accounts button').forEach((b) => b.onclick = () => {
+  const [u, p] = b.dataset.fill.split('|');
+  $('#uid').value = u; $('#pwd').value = p;
+  $('#gate-err').removeAttribute('data-on');
+});
+$('#signout').onclick = signOut;
+$('#session-pick').onchange = (e) => { state.session = e.target.value; render(); };
+
+/* ============================================================
+   6. RENDER
+   ============================================================ */
+function render() {
+  const cfg = ROLES[SESSION.role];
+  if (!cfg.views.some((v) => v.id === state.view)) state.view = cfg.views[0].id;
+
+  $('#nav').innerHTML = cfg.views.map((v) =>
+    `<button data-view="${v.id}" aria-current="${state.view === v.id}">${icon(v.icon)}<span>${v.label}</span></button>`).join('');
+  $('#nav').querySelectorAll('button').forEach((b) => b.onclick = () => { state.view = b.dataset.view; render(); });
+
+  const v = cfg.views.find((x) => x.id === state.view);
+  const subj = SESSION.subject;
+  $('#ctx-title').textContent = SESSION.role === 'student' ? subj.name : v.head[0];
+  $('#ctx-sub').textContent = SESSION.role === 'student'
+    ? `${subj.matric} · ${subj.programme} · ${subj.level} Level`
+    : (v.head[1] ? `${v.head[1]} · ${state.session} session` : state.session + ' session');
+
+  $('#who-name').textContent = SESSION.user.name;
+  $('#who-role').textContent = SESSION.user.title;
+  $('#who-av').textContent = SESSION.user.name.split(' ').slice(-1)[0].slice(0, 2).toUpperCase();
+
+  const map = {
+    overview: viewOverview, risk: viewRisk, courses: viewCourses, students: viewStudents,
+    teaching: viewTeaching, myclass: viewStudents,
+    standing: viewStanding, results: viewResults, attendance: viewAttendance,
+  };
+  $('#content').innerHTML = '';
+  $('#content').appendChild(map[state.view]());
+}
+
+/* ============================================================
+   7. SHARED PIECES
+   ============================================================ */
+function statCard(k, v, m) {
+  return `<div class="card stat"><div class="k">${k}</div><div class="v">${v}</div><div class="m">${m}</div></div>`;
+}
+
+function riskTable(list) {
+  if (!list.length) return `<div class="empty">No students match these filters. Widen the search or clear the risk band.</div>`;
+  return `<table class="data">
+    <thead><tr>
+      <th>Student</th><th>Level</th><th class="r">CGPA</th><th class="r">Change</th>
+      <th class="r">Attendance</th><th class="r">Carryovers</th><th>Risk</th><th>Why</th>
+    </tr></thead>
+    <tbody>${list.map((s) => {
+      const col = s.riskBand === 'high' ? T.alert : s.riskBand === 'watch' ? T.amber : T.moss;
+      const d = s.gpaDelta;
+      return `<tr>
+        <td class="who"><b>${esc(s.name)}</b><span>${esc(s.matric)}</span></td>
+        <td class="num">${s.level}</td>
+        <td class="r num">${s.cgpa.toFixed(2)}</td>
+        <td class="r num" style="color:${d < 0 ? T.alert : d > 0 ? T.moss : 'var(--ink-45)'}">${d > 0 ? '+' : ''}${d.toFixed(2)}</td>
+        <td class="r num">${s.attendance}%</td>
+        <td class="r num">${s.carryovers.length || '—'}</td>
+        <td><div style="display:flex;align-items:center;gap:9px">
+          <div class="meter" style="width:54px"><i style="width:${s.riskScore}%;background:${col}"></i></div>
+          <span class="num" style="font-size:12.5px">${s.riskScore}</span>
+        </div></td>
+        <td class="reasons">${esc(s.riskReasons.slice(0, 2).join(' · '))}</td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+/* ============================================================
+   8. ADMIN VIEWS
+   ============================================================ */
+function viewOverview() {
+  const list = snapshot();
+  const D = deptStats(list);
+  const pts = list.map((s) => ({ x: s.attendance, y: s.cgpa, band: s.riskBand, label: s.name }));
+  const top = [...list].sort((a, b) => b.riskScore - a.riskScore).slice(0, 6);
+
+  return el(`<div class="view">
+    <div class="grid g-4">
+      ${statCard('Enrolled', D.enrolled, 'Computer Science, all levels')}
+      ${statCard('Mean CGPA', D.meanCgpa.toFixed(2), `<b>${D.goodStanding}%</b> at 2:2 or above`)}
+      ${statCard('Flagged', D.atRisk, `<b>${D.highRisk}</b> high risk, ${D.atRisk - D.highRisk} on watch`)}
+      ${statCard('Mean attendance', D.meanAttendance + '%', 'Across all registered courses')}
+    </div>
+
+    <div class="grid g-32">
+      <div class="card">
+        <div class="card-head"><h3>Attendance against CGPA</h3><p>Each dot is one student</p></div>
+        <div class="card-body">
+          ${scatter(pts, D.r)}
+          <div class="legend">
+            <span><i style="background:${T.moss}"></i>Clear</span>
+            <span><i style="background:${T.amber}"></i>Watch</span>
+            <span><i style="background:${T.alert}"></i>High risk</span>
+            <span><i style="background:${T.ink}"></i>Line of best fit</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Standing as at ${esc(state.session)}</h3><p>By degree classification</p></div>
+        <div class="card-body">${classBars(D.classSpread, D.enrolled)}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Needs attention first</h3><p>Six highest risk scores</p>
+        <span class="spacer"></span>
+        <button class="pill ghost" id="goto-risk" style="border:0">Open full register →</button>
+      </div>
+      <div class="card-body flush"><div class="tbl-wrap">${riskTable(top)}</div></div>
+    </div>
+  </div>`);
+}
+
+function viewRisk() {
+  const node = el(`<div class="view">
+    <div class="card">
+      <div class="card-head"><h3>Register</h3><p id="risk-count"></p></div>
+      <div class="filters">
+        <input type="search" id="q" placeholder="Search name or matric number" value="${esc(state.query)}">
+        <div class="switch" id="band">
+          ${['all', 'high', 'watch', 'clear'].map((b) => `<button data-band="${b}" aria-pressed="${state.riskFilter === b}">${b === 'all' ? 'All' : b[0].toUpperCase() + b.slice(1)}</button>`).join('')}
+        </div>
+      </div>
+      <div class="card-body flush"><div class="tbl-wrap" id="risk-body"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>How the risk score is built</h3><p>Rule-based. No prediction model, no black box.</p></div>
+      <div class="card-body">
+        <div class="strip">
+          <div class="item"><div class="k">CGPA shortfall</div><div class="v">40 pts</div></div>
+          <div class="item"><div class="k">Semester GPA drop</div><div class="v">20 pts</div></div>
+          <div class="item"><div class="k">Attendance shortfall</div><div class="v">25 pts</div></div>
+          <div class="item"><div class="k">Outstanding carryovers</div><div class="v">15 pts</div></div>
+        </div>
+        <p style="font-size:13px;color:var(--ink-70);margin:14px 0 0">A score of 60 or above is high risk and triggers a review. 35 to 59 is a watch. Below 35 needs no action.</p>
+      </div>
+    </div>
+  </div>`);
+
+  const draw = () => {
+    let list = snapshot().filter((s) => state.riskFilter === 'all' || s.riskBand === state.riskFilter);
+    if (state.query.trim()) {
+      const q = state.query.toLowerCase();
+      list = list.filter((s) => s.name.toLowerCase().includes(q) || s.matric.toLowerCase().includes(q));
+    }
+    list.sort((a, b) => b.riskScore - a.riskScore);
+    node.querySelector('#risk-body').innerHTML = riskTable(list.slice(0, 40));
+    node.querySelector('#risk-count').textContent = `${list.length} student${list.length === 1 ? '' : 's'}${list.length > 40 ? ' · showing first 40' : ''}`;
+  };
+  node.querySelector('#q').oninput = (e) => { state.query = e.target.value; draw(); };
+  node.querySelector('#band').querySelectorAll('button').forEach((b) => b.onclick = () => {
+    state.riskFilter = b.dataset.band;
+    node.querySelector('#band').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    draw();
+  });
+  draw();
+  return node;
+}
+
+function viewCourses() {
+  const rows = COURSE_STATS.slice(0, 16);
+  return el(`<div class="view">
+    <div class="card">
+      <div class="card-head"><h3>Ranked by failure rate</h3><p>Courses failing students, not students failing courses</p></div>
+      <div class="card-body flush"><div class="tbl-wrap">
+        <table class="data">
+          <thead><tr><th>Course</th><th>Area</th><th class="r">Units</th><th class="r">Sat</th><th class="r">Mean</th><th class="r">Spread</th><th>Failure rate</th></tr></thead>
+          <tbody>${rows.map((c) => `
+            <tr>
+              <td class="who"><b>${esc(c.title)}</b><span>${esc(c.code)} · ${c.level} Level</span></td>
+              <td><span class="pill ghost">${esc(c.area)}</span></td>
+              <td class="r num">${c.unit}</td>
+              <td class="r num">${c.sat}</td>
+              <td class="r num">${c.mean.toFixed(1)}</td>
+              <td class="r num" style="color:var(--ink-45)">±${c.sd.toFixed(1)}</td>
+              <td><div style="display:flex;align-items:center;gap:9px">
+                <div class="meter" style="width:70px"><i style="width:${Math.min(c.failRate * 2.2, 100)}%;background:${c.failRate > 25 ? T.alert : c.failRate > 12 ? T.amber : T.moss}"></i></div>
+                <span class="num" style="font-size:12.5px">${c.failRate.toFixed(1)}%</span>
+              </div></td>
+            </tr>`).join('')}</tbody>
+        </table>
+      </div></div>
+    </div>
+  </div>`);
+}
+
+function viewStudents() {
+  const scoped = scope('students');
+  const node = el(`<div class="view">
+    <div class="card">
+      <div class="card-head"><h3>${scoped === 'my-classes' ? 'Students in my courses' : 'All records'}</h3><p id="s-count"></p></div>
+      <div class="filters"><input type="search" id="q2" placeholder="Search name or matric number"></div>
+      <div class="card-body flush"><div class="tbl-wrap" id="s-body"></div></div>
+    </div>
+  </div>`);
+  const draw = (q = '') => {
+    let list = snapshot();
+    if (q.trim()) { const t = q.toLowerCase(); list = list.filter((s) => s.name.toLowerCase().includes(t) || s.matric.toLowerCase().includes(t)); }
+    list.sort((a, b) => b.cgpa - a.cgpa);
+    node.querySelector('#s-count').textContent = `${list.length} record${list.length === 1 ? '' : 's'}${list.length > 40 ? ' · showing first 40' : ''}`;
+    node.querySelector('#s-body').innerHTML = list.length ? `<table class="data">
+      <thead><tr><th>Student</th><th>Programme</th><th class="r">Level</th><th class="r">Units</th><th class="r">CGPA</th><th>Standing</th><th>Status</th></tr></thead>
+      <tbody>${list.slice(0, 40).map((s) => `<tr>
+        <td class="who"><b>${esc(s.name)}</b><span>${esc(s.matric)}</span></td>
+        <td>${esc(s.programme)}</td>
+        <td class="r num">${s.level}</td>
+        <td class="r num">${s.unitsEarned}</td>
+        <td class="r num">${s.cgpa.toFixed(2)}</td>
+        <td>${esc(degreeClass(s.cgpa).label)}</td>
+        <td><span class="pill ${s.riskBand}">${s.riskBand === 'high' ? 'High risk' : s.riskBand === 'watch' ? 'Watch' : 'Clear'}</span></td>
+      </tr>`).join('')}</tbody></table>` : `<div class="empty">Nothing matches that search. Try a surname or a matric number.</div>`;
+  };
+  node.querySelector('#q2').oninput = (e) => draw(e.target.value);
+  draw();
+  return node;
+}
+
+/* ============================================================
+   9. LECTURER VIEW
+   ============================================================ */
+function viewTeaching() {
+  const mine = LECTURERS.find((l) => l.id === SESSION.user.staffId) || LECTURERS[0];
+  if (!mine.courses.includes(state.course)) state.course = mine.courses[0];
+
+  const node = el(`<div class="view">
+    <div class="card">
+      <div class="card-head"><h3>Courses I teach</h3><p>Select a course to enter scores and view the spread</p>
+        <span class="spacer"></span>
+        <div class="switch" id="cpick">${mine.courses.map((c) => `<button data-c="${c}" aria-pressed="${state.course === c}">${c}</button>`).join('')}</div>
+      </div>
+      <div class="card-body" id="cstats"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>Score sheet</h3><p>Continuous assessment out of 30, examination out of 70. Totals and grades compute themselves.</p></div>
+      <div class="card-body flush"><div class="tbl-wrap" id="sheet"></div></div>
+    </div>
+  </div>`);
+
+  const draw = () => {
+    const c = COURSE_STATS.find((x) => x.code === state.course);
+    node.querySelector('#cstats').innerHTML = `
+      <div class="strip" style="margin-bottom:16px">
+        <div class="item"><div class="k">Students sat</div><div class="v">${c.sat}</div></div>
+        <div class="item"><div class="k">Mean score</div><div class="v">${c.mean.toFixed(1)}</div></div>
+        <div class="item"><div class="k">Spread</div><div class="v">±${c.sd.toFixed(1)}</div></div>
+        <div class="item"><div class="k">Failure rate</div><div class="v" style="color:${c.failRate > 25 ? T.alert : 'inherit'}">${c.failRate.toFixed(1)}%</div></div>
+        <div class="item"><div class="k">Credit units</div><div class="v">${c.unit}</div></div>
+      </div>
+      ${histogram(c.scores)}`;
+
+    const enrolled = [];
+    STUDENTS.forEach((s) => s.semesters.forEach((sem) => sem.rows.forEach((r) => {
+      if (r.code === state.course && enrolled.length < 22) enrolled.push({ s, r });
+    })));
+    node.querySelector('#sheet').innerHTML = `<table class="data">
+      <thead><tr><th>Student</th><th class="r">CA / 30</th><th class="r">Exam / 70</th><th class="r">Total</th><th class="r">Grade</th><th class="r">Points</th></tr></thead>
+      <tbody>${enrolled.map(({ s, r }) => `<tr>
+        <td class="who"><b>${esc(s.name)}</b><span>${esc(s.matric)}</span></td>
+        <td class="r"><input class="num sc" value="${r.ca}" style="width:56px;text-align:right;font-size:13px;padding:5px 7px;border:1px solid var(--line-firm);border-radius:6px"></td>
+        <td class="r"><input class="num sc" value="${r.exam}" style="width:56px;text-align:right;font-size:13px;padding:5px 7px;border:1px solid var(--line-firm);border-radius:6px"></td>
+        <td class="r num tot">${r.total}</td>
+        <td class="r"><span class="gr ${r.letter}">${r.letter}</span></td>
+        <td class="r num pts">${r.point}</td>
+      </tr>`).join('')}</tbody></table>`;
+
+    node.querySelectorAll('#sheet tbody tr').forEach((tr) => {
+      const ins = tr.querySelectorAll('input.sc');
+      if (!ins.length) return;
+      ins.forEach((i) => i.oninput = () => {
+        const ca = Math.min(Math.max(+ins[0].value || 0, 0), 30);
+        const ex = Math.min(Math.max(+ins[1].value || 0, 0), 70);
+        const tot = ca + ex, g = window.DB.gradeOf(tot);
+        tr.querySelector('.tot').textContent = tot;
+        const gc = tr.querySelector('.gr'); gc.className = 'gr ' + g.letter; gc.textContent = g.letter;
+        tr.querySelector('.pts').textContent = g.point;
+      });
+    });
+  };
+
+  node.querySelector('#cpick').querySelectorAll('button').forEach((b) => b.onclick = () => {
+    state.course = b.dataset.c;
+    node.querySelector('#cpick').querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    draw();
+  });
+  draw();
+  return node;
+}
+
+/* ============================================================
+   10. STUDENT VIEWS
+   ============================================================ */
+function me() { return asOf(SESSION.subject, state.session) || asOf(SESSION.subject, '9999'); }
+
+function classRail(cgpa) {
+  const colors = { fail: T.alert, pass: T.gold, third: T.amber, second_lower: T.sage, second_upper: T.mossMid, first: T.moss };
+  const names = { first: '1st', second_upper: '2:1', second_lower: '2:2', third: '3rd', pass: 'Pass', fail: 'Fail' };
+  const segs = DEGREE_CLASSES.slice().reverse().map((b) => {
+    const lo = b.min, hi = b.key === 'first' ? 5.0 : b.max + 0.01;
+    return `<div class="band" style="left:${(lo / 5) * 100}%;width:${((hi - lo) / 5) * 100}%;background:${colors[b.key]}"><span>${names[b.key]}</span></div>`;
+  }).join('');
+  const cur = degreeClass(cgpa);
+  const i = DEGREE_CLASSES.findIndex((c) => c.key === cur.key) - 1;
+  const next = i >= 0 ? DEGREE_CLASSES[i] : null;
+  return `<div class="card classrail">
+    <div class="card-head" style="padding:0"><h3>Where this CGPA lands</h3><p>Degree classification, 5.00 scale</p></div>
+    <div class="track">${segs}<div class="marker" style="left:${(cgpa / 5) * 100}%"><b>${cgpa.toFixed(2)}</b></div></div>
+    <div class="scale"><span>0.00</span><span>1.50</span><span>2.40</span><span>3.50</span><span>4.50</span><span>5.00</span></div>
+    <div class="verdict">Currently <b>${cur.label}</b>. ${next ? `A CGPA of <b>${next.min.toFixed(2)}</b> moves this to ${next.label} — a gap of <b>${(next.min - cgpa).toFixed(2)}</b>.` : 'This is the highest classification.'}</div>
+  </div>`;
+}
+
+function areaAverages(st) {
+  const m = {};
+  st.semesters.forEach((s) => s.rows.forEach((r) => { (m[r.area] = m[r.area] || []).push(r.point); }));
+  return Object.entries(m).map(([name, v]) => ({ name, avg: v.reduce((a, b) => a + b, 0) / v.length })).sort((a, b) => b.avg - a.avg);
+}
+
+function viewStanding() {
+  const M = me();
+  const labels = M.semesters.map((s) => s.label);
+  const cgpaS = { name: 'CGPA', values: M.semesters.map((s) => s.cgpa), color: T.moss, area: true, width: 2.8 };
+  const gpaS = { name: 'Semester GPA', values: M.semesters.map((s) => s.gpa), color: T.sage, dash: '5 4' };
+  const last = M.semesters[M.semesters.length - 1];
+
+  const node = el(`<div class="view">
+    <div class="grid g-4">
+      ${statCard('CGPA', M.cgpa.toFixed(2), esc(degreeClass(M.cgpa).label))}
+      ${statCard('Last semester', last.gpa.toFixed(2), `<b style="color:${M.gpaDelta < 0 ? T.alert : T.moss}">${M.gpaDelta > 0 ? '+' : ''}${M.gpaDelta.toFixed(2)}</b> against the semester before`)}
+      ${statCard('Units earned', M.unitsEarned, `${REMAINING_UNITS} units left to graduate`)}
+      ${statCard('Carryovers', M.carryovers.length || '0', M.carryovers.length ? esc(M.carryovers.map((c) => c.code).join(', ')) : 'Nothing outstanding')}
+    </div>
+
+    ${classRail(M.cgpa)}
+
+    <div class="grid g-32">
+      <div class="card">
+        <div class="card-head"><h3>Semester by semester</h3><p>GPA against running CGPA</p></div>
+        <div class="card-body">
+          ${lineChart(labels, [cgpaS, gpaS], { alt: 'GPA and CGPA across semesters' })}
+          <div class="legend"><span><i style="background:${T.moss}"></i>CGPA</span><span><i style="background:${T.sage}"></i>Semester GPA</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>What it takes from here</h3><p>${REMAINING_UNITS} units remain in ${M.level} Level second semester</p></div>
+        <div class="card-body proj" id="proj"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h3>Strengths and weak spots</h3><p>Average grade point by course area</p></div>
+      <div class="card-body">${areaBars(areaAverages(M))}</div>
+    </div>
+  </div>`);
+
+  const drawProj = () => {
+    const box = node.querySelector('#proj');
+    const t = DEGREE_CLASSES.find((c) => c.key === state.target);
+    const total = M.unitsEarned + REMAINING_UNITS;
+    const req = (t.min * total - M.cgpa * M.unitsEarned) / REMAINING_UNITS;
+    const impossible = req > 5, already = req <= 0;
+    box.innerHTML = `
+      <div class="targets">${DEGREE_CLASSES.slice(0, 4).map((c) => `<button data-t="${c.key}" aria-pressed="${state.target === c.key}">${c.key === 'first' ? 'First Class' : c.key === 'second_upper' ? '2:1' : c.key === 'second_lower' ? '2:2' : 'Third'}</button>`).join('')}</div>
+      <div class="verdict">
+        ${already ? `<span class="big" style="color:${T.moss}">Secured</span>Even a 0.00 this semester keeps ${esc(t.label)}.`
+        : impossible ? `<span class="big" style="color:${T.alert}">Out of reach</span>${esc(t.label)} would need a GPA of ${req.toFixed(2)} — above the 5.00 ceiling.`
+        : `Graduate with <b>${esc(t.label)}</b> and this semester needs a GPA of<span class="big">${req.toFixed(2)}</span>across ${REMAINING_UNITS} units.`}
+      </div>
+      <div class="note ${req > 4.4 && !already && !impossible ? 'warn' : ''}">${
+        already ? 'Target already met on current standing.'
+        : impossible ? 'Pick a lower classification to see a reachable target.'
+        : req > 4.4 ? 'That means A grades in almost everything. Tight.'
+        : req > 3.4 ? 'Achievable, but there is no room for a failed course.'
+        : 'Comfortably within reach on current form.'}</div>
+      <div class="note">Assumes all ${REMAINING.length} remaining courses are passed at first attempt. A carryover changes the arithmetic.</div>`;
+    box.querySelectorAll('.targets button').forEach((b) => b.onclick = () => { state.target = b.dataset.t; drawProj(); });
+  };
+  drawProj();
+  return node;
+}
+
+function viewResults() {
+  const M = me();
+  return el(`<div class="view">${M.semesters.slice().reverse().map((s) => `
+    <div class="card">
+      <div class="card-head"><h3>${esc(s.label)}</h3><p>${esc(s.session)} session · ${s.units} units</p>
+        <span class="spacer"></span>
+        <span class="pill ghost">GPA ${s.gpa.toFixed(2)}</span>
+        <span class="pill clear">CGPA ${s.cgpa.toFixed(2)}</span>
+      </div>
+      <div class="card-body flush"><div class="tbl-wrap">
+        <table class="data">
+          <thead><tr><th>Course</th><th class="r">Unit</th><th class="r">CA</th><th class="r">Exam</th><th class="r">Total</th><th class="r">Grade</th><th class="r">Points</th></tr></thead>
+          <tbody>${s.rows.map((r) => `<tr>
+            <td class="who"><b>${esc(r.title)}</b><span>${esc(r.code)}</span></td>
+            <td class="r num">${r.unit}</td><td class="r num">${r.ca}</td><td class="r num">${r.exam}</td>
+            <td class="r num">${r.total}</td>
+            <td class="r"><span class="gr ${r.letter}">${r.letter}</span></td>
+            <td class="r num">${r.point * r.unit}</td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div></div>
+    </div>`).join('')}</div>`);
+}
+
+function viewAttendance() {
+  const M = me();
+  const cohort = STUDENTS.filter((s) => s.level === M.level).map((s) => asOf(s, state.session)).filter(Boolean);
+  const better = cohort.filter((s) => s.attendance < M.attendance).length;
+  const pct = Math.round((better / cohort.length) * 100);
+  const pts = cohort.map((s) => ({ x: s.attendance, y: s.cgpa, band: s.id === M.id ? 'high' : 'clear', label: s.id === M.id ? 'You' : s.name }));
+  const r = window.DB.pearson(cohort.map((s) => s.attendance), cohort.map((s) => s.cgpa));
+
+  return el(`<div class="view">
+    <div class="grid g-4">
+      ${statCard('My attendance', M.attendance + '%', M.attendance < 60 ? `<b style="color:${T.alert}">Below the 60% threshold</b>` : 'Above the 60% threshold')}
+      ${statCard('Cohort average', Math.round(cohort.reduce((a, s) => a + s.attendance, 0) / cohort.length) + '%', `${M.level} Level, ${cohort.length} students`)}
+      ${statCard('Percentile', pct + 'th', `Higher than ${better} of ${cohort.length} classmates`)}
+      ${statCard('Correlation', r.toFixed(2), 'Attendance against CGPA, this cohort')}
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>My position in the cohort</h3><p>The highlighted dot is you</p></div>
+      <div class="card-body">${scatter(pts, r)}</div>
+    </div>
+  </div>`);
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.id === 'goto-risk') { state.view = 'risk'; render(); }
+});
+
+</script>
+</body>
+</html>
